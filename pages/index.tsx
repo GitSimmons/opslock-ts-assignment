@@ -17,11 +17,15 @@ export default function Index() {
     setAvailableShifts((checkAvailableShifts(currentShifts, globalShiftList)))
     , [currentShifts])
 
+  const sortShiftsByStartTime = (shifts: IShift[]): IShift[] => shifts.sort((a, b) => parseInt(a.start, 10) - parseInt(b.start, 10))
+  const sortShiftsByEndTime = (shifts: IShift[]): IShift[] => shifts.sort((a, b) => parseInt(a.end, 10) - parseInt(b.end, 10))
+  const sortShiftsByLength = (shifts: IShift[]): IShift[] => shifts.sort((a, b) => (parseInt(a.end, 10) - parseInt(a.start)) - (parseInt(b.end, 10) - parseInt(b.start)))
+
   return (
     <div>
-      Global Shifts
+      All Shifts
       <ul>
-        {globalShiftList.map((shift) => <li>{shift.start} - {shift.end}</li>)}
+        {sortShiftsByStartTime(globalShiftList).map((shift) => <li>{shift.start} - {shift.end}</li>)}
       </ul>
       Current Shifts
       <ul>
