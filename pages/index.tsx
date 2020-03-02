@@ -3,7 +3,7 @@ import { globalShiftList, userShifts, IShift } from "../sources";
 import { checkAvailableShifts } from "../utils/checkAvailableShifts";
 import { sortShiftsByStartTime } from '../utils/sortShifts'
 
-export const ShiftList = ({ shifts, listTitle, handleClick, sort }) =>
+export const ShiftList = ({ shifts, listTitle, handleClick, sort }: { shifts: IShift[], listTitle: string, handleClick: (shift: IShift) => void, sort: (shifts: IShift[]) => IShift[] }) =>
   <ul key={listTitle}>
     {sort(shifts).map((shift) =>
       <li
