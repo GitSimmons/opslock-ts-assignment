@@ -1,32 +1,29 @@
 import { IShift } from "./sources";
 
-const convertShiftToNumbers = ({ start, end }: IShift) => {
+export const convertShiftToNumbers = ({ start, end }: IShift) => {
   return {
     start: parseInt(start, 10),
     end: parseInt(end, 10)
   };
 };
 
-const shiftsThatDoNotIncludeShift = (
+export const shiftIsFree = (
   shiftToCheckObj: IShift,
   currentShifts: IShift[]
-): IShift[] => {
-  return currentShifts.filter(shiftObj => {
+): boolean => {
+  return currentShifts.every(shiftObj => {
     const shift = convertShiftToNumbers(shiftObj);
     const shiftToCheck = convertShiftToNumbers(shiftToCheckObj);
     return (
-      // shift starts and ends before the start of the shift it's comparing itself to
-      (shiftToCheck.start <= shift.start && shiftToCheck.end <= shift.start) ||
-      // or shift starts and ends after the shift it's comparing itself to
-      (shiftToCheck.start >= shift.end && shiftToCheck.end >= shift.end)
+      // shift either ends before the compared shift ends or starts after the compared shift ends
+      shiftToCheck.end <= shift.start || shiftToCheck.start >= shift.end
     );
   });
 };
 
-const shiftIsFree = (shift, currentShifts): boolean =>
-  shiftsThatDoNotIncludeShift(shift, currentShifts).length ===
-  currentShifts.length;
-
-export const checkAvailableShifts = (currentShifts, allShifts) => {
+export const checkAvailableShifts = (
+  currentShifts: IShift[],
+  allShifts: IShift[]
+): IShift[] => {
   return allShifts.filter(shift => shiftIsFree(shift, currentShifts));
 };

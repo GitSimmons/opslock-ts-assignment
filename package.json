@@ -1,0 +1,21 @@
+{
+  "name": "opslock-webdev",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": "git@github.com:GitSimmons/opslock-ts-assignment.git",
+  "author": "Ben Simmons <ben.ryan.simmons@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/preset-env": "^7.8.4",
+    "@babel/preset-typescript": "^7.8.3",
+    "@types/jest": "^25.1.3",
+    "jest": "^25.1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "babel-jest": "^25.1.0"
+  }
+}
