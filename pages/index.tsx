@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { globalShiftList, userShifts, IShift } from "../sources";
-import { checkAvailableShifts } from "../utils";
-
+import { checkAvailableShifts } from "../utils/checkAvailableShifts";
+import { sortShiftsByStartTime } from '../utils/sortShifts'
 
 export default () => {
   const [currentShifts, setCurrentShifts] = useState(userShifts)
@@ -15,10 +15,6 @@ export default () => {
   useEffect(() =>
     setAvailableShifts((checkAvailableShifts(currentShifts, globalShiftList)))
     , [currentShifts])
-
-  const sortShiftsByStartTime = (shifts: IShift[]): IShift[] => shifts.sort((a, b) => parseInt(a.start, 10) - parseInt(b.start, 10))
-  const sortShiftsByEndTime = (shifts: IShift[]): IShift[] => shifts.sort((a, b) => parseInt(a.end, 10) - parseInt(b.end, 10))
-  const sortShiftsByLength = (shifts: IShift[]): IShift[] => shifts.sort((a, b) => (parseInt(a.end, 10) - parseInt(a.start)) - (parseInt(b.end, 10) - parseInt(b.start)))
 
   return (
     <div>

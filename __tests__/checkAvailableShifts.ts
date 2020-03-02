@@ -2,7 +2,7 @@ import {
   convertShiftToNumbers,
   shiftIsFree,
   checkAvailableShifts
-} from "../utils";
+} from "../utils/checkAvailableShifts";
 import { userShifts, globalShiftList } from "../sources";
 
 const freeShift = {
