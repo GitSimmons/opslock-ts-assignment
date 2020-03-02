@@ -19,7 +19,7 @@ test("clicking an available shift should add it to current shifts and remove it 
   expect(queryByTestId("availableShifts-0000-0600")).not.toBeInTheDocument()
 });
 
-test("clicking a current should remove it from current shifts and add it to available shifts", () => {
+test("clicking a current shift should remove it from current shifts and add it to available shifts", () => {
   const { queryByTestId } = render(<IndexPage />);
   const currentShift = queryByTestId("currentShifts-1600-2000")
   fireEvent.click(currentShift)
