@@ -1,42 +1,65 @@
 import React, { useState, useEffect } from "react";
 import { globalShiftList, userShifts, IShift } from "../sources";
 import { checkAvailableShifts } from "../utils/checkAvailableShifts";
-import { sortShiftsByStartTime } from '../utils/sortShifts'
-
-export const ShiftList = ({ shifts, listTitle, handleClick, sort }: { shifts: IShift[], listTitle: string, handleClick: (shift: IShift) => void, sort: (shifts: IShift[]) => IShift[] }) =>
-  <ul key={listTitle}>
-    {sort(shifts).map((shift) =>
-      <li
-        onClick={() => handleClick(shift)}
-        key={`${listTitle}-${shift.start}-${shift.end}`}
-        data-testid={`${listTitle}-${shift.start}-${shift.end}`}
-      >
-        {shift.start} - {shift.end}
-      </li>)}
-  </ul>
+import { sortShiftsByStartTime } from "../utils/sortShifts";
+import { Timeline } from "../components/Timeline";
+import { Container } from "../components/Container";
+import { useFormat, Format, FormatContext } from "../components/useFormat";
+import { FormatToggle } from '../components/FormatToggle'
+import { MyShifts } from '../components/MyShifts'
 
 export default () => {
-  const [currentShifts, setCurrentShifts] = useState(userShifts)
-  const [availableShifts, setAvailableShifts] = useState(checkAvailableShifts(currentShifts, globalShiftList))
+  const [globalShifts, setGlobalShifts] = useState(globalShiftList);
+  const [currentShifts, setCurrentShifts] = useState(userShifts);
+  const [availableShifts, setAvailableShifts] = useState(
+    checkAvailableShifts(currentShifts, globalShiftList)
+  );
+  const { changeFormat, format } = useFormat();
 
   const addShift = (shift: IShift) => {
-    setCurrentShifts((prevShifts) => [...prevShifts, shift])
-  }
+    setCurrentShifts(prevShifts => [...prevShifts, shift]);
+    setGlobalShifts(prevShifts =>
+      prevShifts.filter(comparisonShift => comparisonShift !== shift)
+    );
+  };
   const removeShift = (shift: IShift) => {
-    setCurrentShifts((prevShifts) => prevShifts.filter((prevShift) => prevShift !== shift))
-  }
-  useEffect(() =>
-    setAvailableShifts((checkAvailableShifts(currentShifts, globalShiftList)))
-    , [currentShifts])
-
-  return (
-    <div>
-      All Shifts
-      <ShiftList shifts={globalShiftList} listTitle='globalShifts' sort={sortShiftsByStartTime} handleClick={() => null} />
-      Current Shifts
-      <ShiftList shifts={currentShifts} listTitle='currentShifts' sort={sortShiftsByStartTime} handleClick={removeShift} />
-      Available Shifts
-      <ShiftList shifts={availableShifts} listTitle='availableShifts' sort={sortShiftsByStartTime} handleClick={addShift} />
-    </div >
+    setCurrentShifts(prevShifts =>
+      prevShifts.filter(prevShift => prevShift !== shift)
+    );
+    setGlobalShifts(prevShifts => [...prevShifts, shift]);
+  };
+  useEffect(
+    () => setAvailableShifts(checkAvailableShifts(currentShifts, globalShifts)),
+    [currentShifts]
   );
-}
+  const toggleShift = shift => {
+    currentShifts.indexOf(shift) !== -1
+      ? removeShift(shift)
+      : availableShifts.indexOf(shift) !== -1
+        ? addShift(shift)
+        : null;
+  };
+  return (
+    <FormatContext.Provider value={{ format }}>
+      <Container>
+        <h2>My Shifts</h2>
+        <MyShifts currentShifts={currentShifts} toggleShift={toggleShift} sort={sortShiftsByStartTime} />
+        <h2>All Shifts</h2>
+        <FormatToggle changeFormat={changeFormat} />
+        <Timeline
+          shifts={globalShifts.concat(currentShifts)}
+          handleClick={toggleShift}
+          availableShifts={availableShifts}
+          currentShifts={currentShifts}
+          sort={sortShiftsByStartTime}
+        />
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: '2rem' }}>
+          <a href="/">
+            <button className="cancel">Cancel</button ></a>
+
+          <button className="save">Save</button>
+        </div>
+      </Container>
+    </FormatContext.Provider >
+  );
+};

@@ -1,28 +1,47 @@
-import { render, fireEvent, waitForElement } from "@testing-library/react";
-import { globalShiftList } from '../sources'
+import { render, fireEvent } from "@testing-library/react";
 import '@testing-library/jest-dom/extend-expect'
 
-import IndexPage, { ShiftList } from "../pages/index";
+import IndexPage from "../pages/index";
 
-test('should render a string for a shift', () => {
-  const sampleString = `${globalShiftList[0].start} - ${globalShiftList[0].end}`
-  const testSort = (shifts) => shifts
-  const { getByText } = render(<ShiftList shifts={globalShiftList} listTitle="test" handleClick={() => null} sort={testSort} />)
+test('should render times for a shift', () => {
+  const sampleString = `00:00 - 06:00`
+  const { getByText } = render(<IndexPage />)
   expect(getByText(sampleString)).toBeInTheDocument()
 })
 
 test("clicking an available shift should add it to current shifts and remove it from available shifts", () => {
-  const { queryByTestId } = render(<IndexPage />);
-  const availableShift = queryByTestId("availableShifts-0000-0600")
-  fireEvent.click(availableShift)
-  expect(queryByTestId("currentShifts-0000-0600")).toBeInTheDocument()
-  expect(queryByTestId("availableShifts-0000-0600")).not.toBeInTheDocument()
+  const sampleString = `00:00 - 06:00`
+  const { getAllByText } = render(<IndexPage />)
+  expect(getAllByText(sampleString)[0]).toHaveClass('available')
+  fireEvent.click(getAllByText(sampleString)[0])
+  expect(getAllByText(sampleString)[0]).not.toHaveClass('available')
+  expect(getAllByText(sampleString)[0]).toHaveClass('current')
+
 });
 
 test("clicking a current shift should remove it from current shifts and add it to available shifts", () => {
-  const { queryByTestId } = render(<IndexPage />);
-  const currentShift = queryByTestId("currentShifts-1600-2000")
-  fireEvent.click(currentShift)
-  expect(queryByTestId("currentShifts-0000-0600")).not.toBeInTheDocument()
-  expect(queryByTestId("availableShifts-0000-0600")).toBeInTheDocument()
+  const sampleString = `06:00 - 10:00`
+  const { getAllByText } = render(<IndexPage />)
+  expect(getAllByText(sampleString)[0]).toHaveClass('current')
+  fireEvent.click(getAllByText(sampleString)[0])
+  expect(getAllByText(sampleString)[0]).not.toHaveClass('current')
+  expect(getAllByText(sampleString)[0]).toHaveClass('available')
 });
+
+test('shifts that are neither available nor current should nave neither class', () => {
+  const sampleString = `00:00 - 12:00`
+  const { getAllByText } = render(<IndexPage />)
+  expect(getAllByText(sampleString)[0]).not.toHaveClass('current')
+  expect(getAllByText(sampleString)[0]).not.toHaveClass('available')
+})
+
+test('should switch from 24h to 12h format views', () => {
+  const sampleString = `16:00 - 20:00`
+  const sampleStringIn12hFormat = `4:00pm - 8:00pm`
+  const formatButtonText = `view in 12h format`
+  const { getAllByText, getByText } = render(<IndexPage />)
+  expect(getAllByText(sampleString)[0]).toBeInTheDocument();
+  fireEvent.click(getByText(formatButtonText))
+  expect(getAllByText(sampleStringIn12hFormat)[0]).toBeInTheDocument()
+})
+
